@@ -32,7 +32,7 @@ router.get("/api/v1/assignment", function (req, res, next) {
 
 router.put('/api/v1/question', function (req, res, next) {
   if(req.query.questionid) {
-    mongo.completeQuestion(req.query.questionid, res);
+    mongo.completeQuestion(req.query.questionid, req.query.wronganw, res);
   }
 });
 

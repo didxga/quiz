@@ -2,6 +2,7 @@
     var question;
     var alpha =["A", "B", "C", "D", "E", "F"]
     var num=0;
+    var wronganswer = 0;
     var userAns = {};
     var questionList;
     var audioSuccess = document.querySelector(".success");
@@ -27,6 +28,9 @@
              nextQ()
          }, 3000)
      } else {
+         wronganswer++;
+         audioRetry.pause()
+         audioRetry.currentTime = 0;
          audioRetry.play()
      }
    }
@@ -47,8 +51,9 @@
    }
 
    async function completeQuestion(qid) {
-       let url = "api/v1/question?questionid="+qid;
+       let url = "api/v1/question?questionid="+qid + "&wronganw=" + wronganswer;
        let resp = await fetch(url, {method: "PUT"})
+       wronganswer=0;
    }
 
    function narrate() {

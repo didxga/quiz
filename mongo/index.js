@@ -43,10 +43,10 @@ exports.findQuestion = async function(res) {
     res.render('questions', {questionList: questionList});
 }
 
-exports.completeQuestion = function(questionid, res) {
+exports.completeQuestion = function(questionid, wronganw, res) {
     mgc.connect(url, function (err, client) {
        var db = client.db("quiz");
-        db.collection("assignment").update({"questionid": new ObjectID(questionid), "status": 0}, {"$set": {"status": 1}});
+        db.collection("assignment").update({"questionid": new ObjectID(questionid), "status": 0}, {"$set": {"status": 1, "wronganw": wronganw}});
         client.close();
         res.json({state: "ok"});
     })
