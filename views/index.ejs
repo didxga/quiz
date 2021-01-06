@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="柚柚爱学习">
+    <link rel="apple-touch-icon" href="images/homescreen.png">
+    <link rel='stylesheet' href='stylesheets/style.css' />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="board" data-questionlist="<%=questionList%>">
+
+      </div>
+      <div class="control">
+        <div class="pre" style="display: none"></div>
+        <div class="megaphone"></div>
+        <div class="next" style="display: none"></div>
+      </div>
+      <div class="audio_list">
+        <audio class="success">
+          <source src="images/success.m4a" type="audio/x-m4a">
+        </audio>
+        <audio class="retry">
+          <source src="images/retry.m4a" type="audio/x-m4a">
+        </audio>
+      </div>
+    </div>
+    <div class="mask"></div>
+    <div class="start"></div>
+    <script type="text/javascript" src="javascripts/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  background-color: #adca03;
+  touch-action: manipulation;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.bg {
+  background-image: url("../images/question_board.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  border: 1px solid green;
+  margin-left:auto;
+  margin-right: auto;
+}
+
+.audio_list {
+  display: none;
+}
+
+.board {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin-left: 10%;
+  margin-top: 14%;
+  margin-right: 12%;
+  padding-left: 30px;
+  padding-top: 20px;
+}
+
+.board .question {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.board .choice {
+  display: flex;
+}
+
+.board .choice .opt {
+  flex: 0 0 20%;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.board .choice .opt div:nth-child(1) {
+  font-size: 28px;
+}
+
+.board .choice .opt img {
+  width: 80px;
+}
+
+.board .question img {
+  width: 220px;
+}
+
+.control {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-bottom: 11%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width:400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.control .megaphone {
+  margin: auto;
+  background-color: #adca03;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  box-shadow: 5px 5px 15px 5px green;
+  background-image: url("../images/megaphone.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.control .next {
+  margin: auto;
+  background-color: #adca03;
+  width: 100px;
+  height: 40px;
+  border-radius: 20px;
+  box-shadow: 5px 5px 15px 5px green;
+  background-image: url("../images/arrow_right.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.control .pre {
+  margin: auto;
+  background-color: #adca03;
+  width: 100px;
+  height: 40px;
+  border-radius: 20px;
+  box-shadow: 5px 5px 15px 5px green;
+  background-image: url("../images/arrow_left.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mask {
+  width: 100vw;
+  height: 100vh;
+  background: aliceblue;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.82;
+}
+
+.start {
+  background-image: url("../images/start.png");
+  width: 400px;
+  height: 400px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}

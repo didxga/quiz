@@ -1,0 +1,56 @@
+<html>
+<head>
+    <title>CMS</title>
+    <link rel='stylesheet' href='stylesheets/cms.css' />
+</head>
+<body>
+    <h2>上传问题</h2>
+    <hr>
+    <section>
+        <form enctype="multipart/form-data" method="post" action="upload-question">
+            <div>
+                <div><label>问题<input name="question" type="file"></label></div>
+                <div><label>音频<input name="narrative" type="file"></label></div>
+                <div><label>难度
+                        <select name="level">
+                            <option value="1">1年级</option>
+                            <option value="2">2年级</option>
+                            <option value="3">3年级</option>
+                            <option value="4">4年级</option>
+                            <option value="5">5年级</option>
+                            <option value="6">6年级</option>
+                            <option value="7">7年级</option>
+                            <option value="8">8年级</option>
+                            <option value="9">9年级</option>
+                            <option value="10">10年级</option>
+                            <option value="11">11年级</option>
+                            <option value="12">12年级</option>
+                        </select></label></div>
+            </div>
+            <div class="opt_list">
+                <br>
+                <h3>选项:</h3>
+                <div class="opt"><div><label>选项1<input name="opt_word_1" type="text"><input name="opt_img_1" type="file"></label></div><div><label><input name="answer" value="opt_1" type="radio">标记为答案</label></div><div class="addmore"><a href="#">添加</a></div></div>
+            </div>
+           <input type="submit" value="提交">
+        </form>
+    </section>
+    <script type="text/javascript">
+        let optlist = document.querySelector(".opt_list");
+        let opt_count = 1
+        optlist.addEventListener("click", function (e) {
+            if (e.target.tagName === 'A') {
+              addopt()
+            }
+        });
+
+        function addopt() {
+            let html = `<div><label>选项${++opt_count}<input name="opt_word_${opt_count}" type="text"><input name="opt_img_${opt_count}" type="file"></label></div><div><label><input name="answer" value="opt_${opt_count }" type="radio">标记为答案</label></div><div class="addmore"><a href="#">添加</a></div>`;
+            var opt = document.createElement("div");
+            opt.className = "opt";
+            opt.innerHTML = html;
+            optlist.appendChild(opt);
+        }
+    </script>
+</body>
+</html>

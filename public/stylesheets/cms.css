@@ -1,0 +1,38 @@
+form {
+    padding: 10px;
+}
+
+input {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+input[type=radio] {
+    margin-left: 5px;
+}
+
+input[type=submit] {
+   margin-top: 20px;
+}
+
+input[type=text]  {
+    height: 25px;
+    line-height: 25px;
+}
+
+.opt {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.opt div {
+    margin: 0 5px 0 5px;
+}
+
+.opt div:nth-child(1) {
+    margin: 0;
+}
+
+.opt div {
+
+}
