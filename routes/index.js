@@ -53,7 +53,7 @@ router.post('/assign-question', function(req, res, next) {
  if(n) {
    mongo.unassign(n.split(","))
  }
- res.redirect("/question")
+ res.redirect("question")
 })
 
 router.post('/upload-question', upload.any(), function (req, res, next) {
