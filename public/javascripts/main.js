@@ -5,6 +5,7 @@
     var wronganswer = 0;
     var userAns = {};
     var questionList;
+    var judging = false;
     var audioSuccess = document.querySelector(".success");
     var audioRetry = document.querySelector(".retry");
     var yeah = document.querySelector(".congrats");
@@ -16,7 +17,10 @@
       let choices = document.querySelectorAll(".choice .opt");
       choices.forEach(function (elemt, key) {
          elemt.addEventListener("click", function () {
-             judge(key)
+             if(!judging) {
+                 judging = true;
+                 judge(key)
+             }
          })
       })
    }
@@ -26,6 +30,7 @@
          audioSuccess.play()
          setTimeout(function () {
              nextQ()
+             judging=false;
          }, 3000)
      } else {
          wronganswer++;
