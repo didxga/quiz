@@ -70,7 +70,7 @@ exports.getAssignment = function(username, batchnumber, res) {
             docs.forEach(function (assignment) {
                 questionList.push(assignment.questionid);
             })
-            res.render('index', {questionList: questionList});
+            res.json({questionList: questionList});
         });
         client.close();
     })

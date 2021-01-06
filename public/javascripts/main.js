@@ -3,7 +3,7 @@
     var alpha =["A", "B", "C", "D", "E", "F"]
     var num=0;
     var userAns = {};
-    var questionList = document.querySelector(".board").getAttribute("data-questionlist").split(",");
+    var questionList;
     var audioSuccess = document.querySelector(".success");
     var audioRetry = document.querySelector(".retry");
     var yeah = document.querySelector(".congrats");
@@ -104,17 +104,28 @@
        document.querySelector(".board").innerHTML = template + opts + rest;
    }
 
+   function getUsername() {
+       return location.search;
+   }
+
    function preload() {
        document.querySelector(".start").addEventListener(
            "click", function () {
-               if(questionList.length == 1 && questionList[0] === "") {
-                   alert("作业已经完成了哦！")
-                   return;
-               } else {
-                   document.querySelector(".start").style.display = "none";
-                   document.querySelector(".mask").style.display = "none";
-                   loadQuiz()
-               }
+               fetch("api/v1/assignment"+getUsername()).then(function (resp) {
+                    if (resp.ok) {
+                        resp.json().then(function (json) {
+                            questionList = json.questionList;
+                            if(questionList.length == 0) {
+                                alert("作业已经完成了哦！")
+                                return;
+                            } else {
+                                document.querySelector(".start").style.display = "none";
+                                document.querySelector(".mask").style.display = "none";
+                                loadQuiz()
+                            }
+                        })
+                    }
+               })
 
            }
        )

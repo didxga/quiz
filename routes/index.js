@@ -22,9 +22,13 @@ var upload = multer({storage: storage})
 
 /* GET home page. */
 router.get('/q', function(req, res, next) {
-  batchnumber = new Date().toLocaleDateString()
-  mongo.getAssignment(req.query.username, batchnumber, res)
+    res.render("index");
 });
+
+router.get("/api/v1/assignment", function (req, res, next) {
+    batchnumber = new Date().toLocaleDateString()
+    mongo.getAssignment(req.query.username, batchnumber, res)
+})
 
 router.put('/api/v1/question', function (req, res, next) {
   if(req.query.questionid) {
