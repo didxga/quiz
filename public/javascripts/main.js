@@ -33,6 +33,7 @@
              judging=false;
          }, 3000)
      } else {
+         judging = false;
          wronganswer++;
          audioRetry.pause()
          audioRetry.currentTime = 0;
