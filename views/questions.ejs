@@ -1,0 +1,64 @@
+<html>
+<head>
+    <title>CMS</title>
+    <link rel='stylesheet' href='stylesheets/cms.css' />
+</head>
+<body>
+<h2>布置作业</h2>
+<hr>
+<section>
+    <table style="border-collapse:collapse; border:1px solid greenyellow;">
+        <thead>
+            <td>ID</td><td>问题</td>
+        </thead>
+        <tbody>
+        <% for(var i=0; i < questionList.length; i++) { %>
+            <tr>
+                <td style="border:1px solid greenyellow;"><%= questionList[i]._id %></td>
+                <td style="border:1px solid greenyellow;"><img src="quiz/<%= questionList[i].question %>"></td>
+                <td>
+                   <% if(questionList[i].assigned == 1) { %>
+                    <button class="unassign">取消分配</button></td>
+                   <%} else if(questionList[i].assigned == -1) {%>
+                     已完成  <button class="assign">再分配</button><input type="text">
+                   <%} else {%>
+                    <button class="assign">分配</button><input type="text">
+                   <%}%>
+            </tr>
+        <% } %>
+        </tbody>
+    </table>
+    <form method="post" action="assign-question">
+        <input type="hidden" name="assignmentlist">
+        <input type="hidden" name="unassignmentlist">
+        <input type="submit" value="提交">
+    </form>
+</section>
+<script type="text/javascript">
+    let inputassign = document.querySelector("input[name=assignmentlist]")
+    let inputunassign = document.querySelector("input[name=unassignmentlist]")
+    document.querySelectorAll(".assign").forEach(function (element) {
+        element.addEventListener("click", function () {
+           let assignments = inputassign.value;
+           if (assignments) {
+               assignments += "," + element.parentElement.parentElement.firstElementChild.innerText + "|" + element.parentElement.lastElementChild.value;
+           } else {
+               assignments = element.parentElement.parentElement.firstElementChild.innerText + "|" + element.parentElement.lastElementChild.value;
+           }
+           inputassign.value = assignments;
+        });
+    })
+    document.querySelectorAll(".unassign").forEach(function (element) {
+        element.addEventListener("click", function () {
+            let unassignments = inputunassign.value;
+            if (unassignments) {
+                unassignments += "," + element.parentElement.parentElement.firstElementChild.innerText;
+            } else {
+                unassignments = element.parentElement.parentElement.firstElementChild.innerText;
+            }
+            inputunassign.value = unassignments;
+        });
+    })
+</script>
+</body>
+</html>

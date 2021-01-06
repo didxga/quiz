@@ -26,6 +26,12 @@ router.get('/q', function(req, res, next) {
   mongo.getAssignment(req.query.username, batchnumber, res)
 });
 
+router.put('/api/v1/question', function (req, res, next) {
+  if(req.query.questionid) {
+    mongo.completeQuestion(req.query.questionid, res);
+  }
+});
+
 router.get('/api/v1/question', function(req, res, next) {
   mongo.getQuiz(req.query.questionid, res)
 });
@@ -33,6 +39,22 @@ router.get('/api/v1/question', function(req, res, next) {
 router.get('/cms', function (req, res, next) {
   res.render('cms')
 });
+
+router.get('/question', function (req, res, next) {
+   mongo.findQuestion(res);
+})
+
+router.post('/assign-question', function(req, res, next) {
+ var a = req.body.assignmentlist;
+ if(a) {
+   mongo.assign(a.split(","))
+ }
+ var n = req.body.unassignmentlist;
+ if(n) {
+   mongo.unassign(n.split(","))
+ }
+ res.redirect("/question")
+})
 
 router.post('/upload-question', upload.any(), function (req, res, next) {
   let files = req.files;

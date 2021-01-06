@@ -6,6 +6,7 @@
     var questionList = document.querySelector(".board").getAttribute("data-questionlist").split(",");
     var audioSuccess = document.querySelector(".success");
     var audioRetry = document.querySelector(".retry");
+    var yeah = document.querySelector(".congrats");
    function eventhook() {
       let megaphoneBtn = document.querySelector(".control .megaphone");
       megaphoneBtn.addEventListener("click", function () {
@@ -31,12 +32,23 @@
    }
 
    function nextQ() {
-        num++;
+       completeQuestion(questionList[num])
+       num++;
         if(num >= questionList.length) {
-           alert("Bingo!")
+            stopAudios();
+           document.querySelector(".mask").style.display = "block";
+           yeah.style.display = "block";
+           setTimeout(function () {
+               window.location.reload()
+           }, 2000)
         } else {
             loadQuiz()
         }
+   }
+
+   async function completeQuestion(qid) {
+       let url = "api/v1/question?questionid="+qid;
+       let resp = await fetch(url, {method: "PUT"})
    }
 
    function narrate() {
@@ -54,7 +66,8 @@
    }
 
    async function loadQuiz() {
-       let resp = await fetch("api/v1/question?questionid="+questionList[num])
+       let url = "api/v1/question?questionid="+questionList[num];
+       let resp = await fetch(url)
        if (resp.ok) {
            let json = await resp.json();
            question = json;
@@ -62,7 +75,7 @@
            eventhook();
            setTimeout(function () {
                narrate()
-           },1500);
+           },1000);
        }
    }
 
@@ -94,9 +107,15 @@
    function preload() {
        document.querySelector(".start").addEventListener(
            "click", function () {
-               document.querySelector(".start").style.display = "none";
-               document.querySelector(".mask").style.display = "none";
-               loadQuiz()
+               if(questionList.length == 1 && questionList[0] === "") {
+                   alert("作业已经完成了哦！")
+                   return;
+               } else {
+                   document.querySelector(".start").style.display = "none";
+                   document.querySelector(".mask").style.display = "none";
+                   loadQuiz()
+               }
+
            }
        )
    }

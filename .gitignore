@@ -1,5 +1,7 @@
 # uploaded file
 public/quiz/
+#idea
+.idea/
 # Logs
 logs
 *.log

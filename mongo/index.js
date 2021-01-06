@@ -1,26 +1,78 @@
 var mgc = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
-var url = "mongodb://192.168.12.164:27017";
+var url = "mongodb://localhost:27017";
+
+exports.assign = async function(questions) {
+    var client = await mgc.connect(url)
+    var db = client.db("quiz");
+    for(var i=0; i<questions.length; i++) {
+        params = questions[i].split("|")
+        let a = {questionid: new ObjectID(params[0]), username: "yoyo", batchnumber: params[1], status: 0};
+        await db.collection("assignment").insertOne(a);
+    }
+}
+
+exports.unassign = async function(questionids) {
+    var client = await mgc.connect(url)
+    var db = client.db("quiz");
+    for(var i=0; i<questionids.length; i++) {
+        let filter = {questionid: new ObjectID(questionids[i])};
+        await db.collection("assignment").deleteOne(filter);
+    }
+}
+
+exports.findQuestion = async function(res) {
+    var questionList = []
+    var client = await mgc.connect(url)
+
+    var db = client.db("quiz");
+    questionList = await db.collection("question").find({}).toArray()
+    for(var i=0, l=questionList.length; i<l; i++) {
+        var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id});
+        if(assignment) {
+            if(assignment.status == 1) {
+                questionList[i].assigned = -1;
+            } else{
+                questionList[i].assigned = 1;
+            }
+        } else {
+            questionList[i].assigned = 0;
+        }
+    }
+    client.close();
+    res.render('questions', {questionList: questionList});
+}
+
+exports.completeQuestion = function(questionid, res) {
+    mgc.connect(url, function (err, client) {
+       var db = client.db("quiz");
+        db.collection("assignment").update({"questionid": new ObjectID(questionid), "status": 0}, {"$set": {"status": 1}});
+        client.close();
+        res.json({state: "ok"});
+    })
+}
 
 exports.getQuiz = function(questionid, res) {
     mgc.connect(url, function (err, client) {
-        db = client.db("quiz");
+        var db = client.db("quiz");
         db.collection("question").findOne({"_id": new ObjectID(questionid)}, function(err, question) {
             res.json(question);
         });
+        client.close();
     })
 }
 
 exports.getAssignment = function(username, batchnumber, res) {
     questionList = [];
     mgc.connect(url, function (err, client) {
-        db = client.db("quiz");
-        db.collection("assignment").find({"username": username, "batchnumber": batchnumber}).toArray(function (err, docs) {
+        var db = client.db("quiz");
+        db.collection("assignment").find({"username": username, "batchnumber": batchnumber, "status": 0}).toArray(function (err, docs) {
             docs.forEach(function (assignment) {
                 questionList.push(assignment.questionid);
             })
             res.render('index', {questionList: questionList});
-        })
+        });
+        client.close();
     })
 }
 
@@ -38,7 +90,7 @@ exports.saveQuiz = function(question, narrative, solution, level, opts_word, opt
        quiz.answer_format = "text"
     }
     mgc.connect(url, function (err, client) {
-        db = client.db("quiz");
+       var db = client.db("quiz");
         db.collection("question").insertOne(quiz);
         client.close();
     })
