@@ -66,7 +66,7 @@ exports.getAssignment = function(username, batchnumber, res) {
     questionList = [];
     mgc.connect(url, function (err, client) {
         var db = client.db("quiz");
-        db.collection("assignment").find({"username": username, "batchnumber": batchnumber, "status": 0}).toArray(function (err, docs) {
+        db.collection("assignment").find({"username": username, "status": 0}).toArray(function (err, docs) {
             docs.forEach(function (assignment) {
                 questionList.push(assignment.questionid);
             })
