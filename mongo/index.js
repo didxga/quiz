@@ -7,7 +7,7 @@ exports.assign = async function(questions) {
     var db = client.db("quiz");
     for(var i=0; i<questions.length; i++) {
         params = questions[i].split("|")
-        let a = {questionid: new ObjectID(params[0]), username: "yoyo", batchnumber: params[1], status: 0};
+        let a = {questionid: new ObjectID(params[0]), username: "yoyo", batchnumber: params[1], status: 0, addedAt: new Date()};
         await db.collection("assignment").insertOne(a);
     }
 }
