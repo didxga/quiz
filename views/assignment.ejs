@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>CMS</title>
+    <link rel='stylesheet' href='stylesheets/cms.css' />
+</head>
+<body>
+<h2>布置作业</h2>
+<hr>
+<section>
+    <form method="post" action="assignto">
+        <select name="username">
+            <% for(var i=0; i < userList.length; i++) { %>
+                <option value="<%=userList[i]%>"><%=userList[i]%></option>
+            <%}%>
+        </select>
+        <input type="submit" value="提交">
+    </form>
+</section>
+</body>
+</html>

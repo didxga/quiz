@@ -2,51 +2,75 @@ var mgc = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 var url = "mongodb://localhost:27017";
 
-exports.assign = async function(questions) {
+exports.getUsers = async function() {
+    var users = [];
+    var client = await mgc.connect(url)
+    var db = client.db("quiz");
+    userList = await db.collection("user").find({}).toArray();
+    for(var i=0, l=userList.length; i<l; i++) {
+       users.push(userList[i].username);
+    }
+    return users;
+}
+
+exports.assign = async function(questions, username) {
     var client = await mgc.connect(url)
     var db = client.db("quiz");
     for(var i=0; i<questions.length; i++) {
-        params = questions[i].split("|")
-        let a = {questionid: new ObjectID(params[0]), username: "yoyo", batchnumber: params[1], status: 0, addedAt: new Date()};
+        qid = questions[i]
+        let a = {questionid: new ObjectID(qid), username: username, status: 0, addedAt: new Date()};
         await db.collection("assignment").insertOne(a);
     }
 }
 
-exports.unassign = async function(questionids) {
+exports.unassign = async function(questionids, username) {
     var client = await mgc.connect(url)
     var db = client.db("quiz");
     for(var i=0; i<questionids.length; i++) {
-        let filter = {questionid: new ObjectID(questionids[i])};
+        let filter = {"questionid": new ObjectID(questionids[i]), "username": username, "status": 0};
         await db.collection("assignment").deleteOne(filter);
     }
 }
 
-exports.findQuestion = async function(res) {
+exports.findUnAssignedQuestion = async function(username) {
+    var questionList = []
+    var unassigned = [];
+    var client = await mgc.connect(url)
+
+    var db = client.db("quiz");
+    questionList = await db.collection("question").find({}).toArray()
+    for(var i=0, l=questionList.length; i<l; i++) {
+        var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id, "username": username });
+        if(!assignment) {
+            unassigned.push(questionList[i])
+        }
+    }
+    client.close();
+    return unassigned;
+}
+
+exports.findQuestion = async function(username) {
     var questionList = []
     var client = await mgc.connect(url)
 
     var db = client.db("quiz");
     questionList = await db.collection("question").find({}).toArray()
     for(var i=0, l=questionList.length; i<l; i++) {
-        var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id});
+        var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id, "username": username, "status": 0});
         if(assignment) {
-            if(assignment.status == 1) {
-                questionList[i].assigned = -1;
-            } else{
-                questionList[i].assigned = 1;
-            }
+            questionList[i].assigned = 1;
         } else {
             questionList[i].assigned = 0;
         }
     }
     client.close();
-    res.render('questions', {questionList: questionList});
+    return questionList;
 }
 
-exports.completeQuestion = function(questionid, wronganw, res) {
+exports.completeQuestion = function(questionid, username, wronganw, res) {
     mgc.connect(url, function (err, client) {
        var db = client.db("quiz");
-        db.collection("assignment").update({"questionid": new ObjectID(questionid), "status": 0}, {"$set": {"status": 1, "wronganw": wronganw}});
+        db.collection("assignment").update({"questionid": new ObjectID(questionid), "username":username, "status": 0}, {"$set": {"status": 1, "wronganw": wronganw}});
         client.close();
         res.json({state: "ok"});
     })
@@ -62,7 +86,7 @@ exports.getQuiz = function(questionid, res) {
     })
 }
 
-exports.getAssignment = function(username, batchnumber, res) {
+exports.getAssignment = function(username, res) {
     questionList = [];
     mgc.connect(url, function (err, client) {
         var db = client.db("quiz");

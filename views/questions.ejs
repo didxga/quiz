@@ -6,10 +6,12 @@
 <body>
 <h2>布置作业</h2>
 <hr>
+<a href="question?u=<%=username%>">查看所有问题</a>
+<a href="question?u=<%=username%>&filter=unassigned">查看未做问题</a>
 <section>
     <table style="border-collapse:collapse; border:1px solid greenyellow;">
         <thead>
-            <td>ID</td><td>问题</td>
+            <td>ID</td><td>分配问题给<%=username%></td>
         </thead>
         <tbody>
         <% for(var i=0; i < questionList.length; i++) { %>
@@ -18,17 +20,17 @@
                 <td style="border:1px solid greenyellow;"><img style="width:400px" src="quiz/<%= questionList[i].question %>"></td>
                 <td>
                    <% if(questionList[i].assigned == 1) { %>
-                    <button class="unassign">取消分配</button></td>
-                   <%} else if(questionList[i].assigned == -1) {%>
-                     已完成  <button class="assign">再分配</button><input type="text">
+                    <button class="unassign">取消分配</button>
                    <%} else {%>
-                    <button class="assign">分配</button><input type="text">
+                    <button class="assign">分配</button>
                    <%}%>
+                </td>
             </tr>
         <% } %>
         </tbody>
     </table>
     <form method="post" action="assign-question">
+        <input type="hidden" name="username" value="<%=username%>">
         <input type="hidden" name="assignmentlist">
         <input type="hidden" name="unassignmentlist">
         <input type="submit" value="提交">
@@ -41,11 +43,12 @@
         element.addEventListener("click", function () {
            let assignments = inputassign.value;
            if (assignments) {
-               assignments += "," + element.parentElement.parentElement.firstElementChild.innerText + "|" + element.parentElement.lastElementChild.value;
+               assignments += "," + element.parentElement.parentElement.firstElementChild.innerText;
            } else {
-               assignments = element.parentElement.parentElement.firstElementChild.innerText + "|" + element.parentElement.lastElementChild.value;
+               assignments = element.parentElement.parentElement.firstElementChild.innerText;
            }
            inputassign.value = assignments;
+            element.remove();
         });
     })
     document.querySelectorAll(".unassign").forEach(function (element) {
@@ -57,6 +60,7 @@
                 unassignments = element.parentElement.parentElement.firstElementChild.innerText;
             }
             inputunassign.value = unassignments;
+            element.remove();
         });
     })
 </script>

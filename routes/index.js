@@ -26,13 +26,12 @@ router.get('/q', function(req, res, next) {
 });
 
 router.get("/api/v1/assignment", function (req, res, next) {
-    batchnumber = new Date().toLocaleDateString()
-    mongo.getAssignment(req.query.username, batchnumber, res)
+    mongo.getAssignment(req.query.username, res)
 })
 
 router.put('/api/v1/question', function (req, res, next) {
   if(req.query.questionid) {
-    mongo.completeQuestion(req.query.questionid, req.query.wronganw, res);
+    mongo.completeQuestion(req.query.questionid, req.query.username, req.query.wronganw, res);
   }
 });
 
@@ -44,20 +43,39 @@ router.get('/cms', function (req, res, next) {
   res.render('cms')
 });
 
-router.get('/question', function (req, res, next) {
-   mongo.findQuestion(res);
+router.get('/question', async function (req, res, next) {
+    var username = req.query.u;
+    var filter = req.query.filter;
+    if(filter && filter == "unassigned") {
+        var questionList = await mongo.findUnAssignedQuestion(username);
+    } else {
+        var questionList = await mongo.findQuestion(username);
+    }
+    res.render('questions', {questionList: questionList, username: username});
+})
+
+router.get('/assignment', async function (req, res, next) {
+    var userList = await mongo.getUsers();
+    res.render('assignment', {userList: userList})
+})
+
+router.post('/assignto', function (req, res, next) {
+    var username = req.body.username;
+    var questionList = mongo.findQuestion(username);
+    res.redirect('question?u=' + username);
 })
 
 router.post('/assign-question', function(req, res, next) {
  var a = req.body.assignmentlist;
+ var username = req.body.username;
  if(a) {
-   mongo.assign(a.split(","))
+   mongo.assign(a.split(","), username)
  }
  var n = req.body.unassignmentlist;
  if(n) {
-   mongo.unassign(n.split(","))
+   mongo.unassign(n.split(","), username)
  }
- res.redirect("question")
+ res.redirect("question?u=" + username);
 })
 
 router.post('/upload-question', upload.any(), function (req, res, next) {

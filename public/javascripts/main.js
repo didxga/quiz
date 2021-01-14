@@ -57,7 +57,7 @@
    }
 
    async function completeQuestion(qid) {
-       let url = "api/v1/question?questionid="+qid + "&wronganw=" + wronganswer;
+       let url = "api/v1/question" +  getUsername() + "&questionid="+qid + "&wronganw=" + wronganswer;
        let resp = await fetch(url, {method: "PUT"})
        wronganswer=0;
    }
