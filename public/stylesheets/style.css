@@ -35,6 +35,7 @@ a {
 .board .question {
   text-align: center;
   flex-basis: 70%;
+  padding: 10px;
 }
 
 .board .choice {
