@@ -9,17 +9,50 @@ var debug = require('debug')('studykit:server');
 var http = require('http');
 
 /**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+const io = require('socket.io')(server);
+var teacherId;
+var studentId;
+
+io.on('connection', (socket) => {
+    socket.emit("init", "");
+    socket.on("register", (args)=>{
+       if (args.isTeacher) {
+        teacherId = args.socketid
+           socket.emit("teacher-online",{
+               teacherId: teacherId
+           })
+       } else {
+           studentId = args.socketid
+           if(teacherId) {
+               socket.emit("teacher-online",{
+                   teacherId: teacherId
+               })
+           }
+       }
+    })
+    socket.on("call-teacher", (data) => {
+        socket.to(data.to).emit("call-made", {
+            offer: data.offer
+        });
+    })
+    socket.on("make-answer", data => {
+        socket.to(studentId).emit("answer-made", {
+            answer: data.answer
+        });
+    });
+});
+
+
+/**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

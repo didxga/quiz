@@ -38,6 +38,10 @@ a {
   padding: 10px;
 }
 
+.board #tut-vid {
+  width:800px;
+}
+
 .board .choice {
   display: flex;
   flex-basis: 30%;

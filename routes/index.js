@@ -78,6 +78,21 @@ router.post('/assign-question', function(req, res, next) {
  res.redirect("question?u=" + username);
 })
 
+router.post('/upload-tutorial', upload.any(), function (req, res, next) {
+    let files = req.files;
+    let tut;
+    if(files) {
+        files.forEach(function (file) {
+            if (file.fieldname == "tutorial") {
+                tut = file.filename;
+            }
+        })
+    }
+    let title = req.body.title;
+    mongo.saveTut(title, tut);
+    res.render("add_success");
+})
+
 router.post('/upload-question', upload.any(), function (req, res, next) {
   let files = req.files;
   let opts = {}

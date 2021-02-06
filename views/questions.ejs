@@ -17,7 +17,11 @@
         <% for(var i=0; i < questionList.length; i++) { %>
             <tr>
                 <td style="border:1px solid greenyellow;"><%= questionList[i]._id %></td>
-                <td style="border:1px solid greenyellow;"><img style="width:400px" src="quiz/<%= questionList[i].question %>"></td>
+                <% if(questionList[i].type=="tut") {%>
+                <td style="border:1px solid greenyellow;"><video style="width:400px" src="quiz/<%= questionList[i].vid %>" controls></video></td>
+                <% } else {%>
+                    <td style="border:1px solid greenyellow;"><img style="width:400px" src="quiz/<%= questionList[i].question %>"></td>
+                <%}%>
                 <td>
                    <% if(questionList[i].assigned == 1) { %>
                     <button class="unassign">取消分配</button>

@@ -4,9 +4,21 @@
     <link rel='stylesheet' href='stylesheets/cms.css' />
 </head>
 <body>
-    <h2>上传问题</h2>
+    <select id="upload-type">
+        <option value="qu">上传问题</option>
+        <option value="tut">上传教程</option>
+    </select>
     <hr>
-    <section>
+    <section id="tut" style="display: none">
+        <form enctype="multipart/form-data" method="post" action="upload-tutorial">
+            <div>
+                <div><label>标题<input name="title" type="text"></label></div>
+                <div><label>音频<input name="tutorial" type="file"></label></div>
+            </div>
+            <input type="submit" value="提交">
+        </form>
+    </section>
+    <section id="qu">
         <form enctype="multipart/form-data" method="post" action="upload-question">
             <div>
                 <div><label>问题<input name="question" type="file"></label></div>
@@ -36,6 +48,7 @@
         </form>
     </section>
     <script type="text/javascript">
+        let uploadtutorial = document.getElementById("upload-type");
         let optlist = document.querySelector(".opt_list");
         let opt_count = 1
         optlist.addEventListener("click", function (e) {
@@ -44,6 +57,16 @@
             }
         });
 
+        uploadtutorial.addEventListener("change", function (e) {
+           let v = uploadtutorial.value;
+           if(v == "tut") {
+              document.getElementById("tut").style.display = "block";
+              document.getElementById("qu").style.display = "none";
+           } else {
+               document.getElementById("tut").style.display = "none";
+               document.getElementById("qu").style.display = "block";
+           }
+        })
         function addopt() {
             let html = `<div><label>选项${++opt_count}<input name="opt_word_${opt_count}" type="text"><input name="opt_img_${opt_count}" type="file"></label></div><div><label><input name="answer" value="opt_${opt_count }" type="radio">标记为答案</label></div><div class="addmore"><a href="#">添加</a></div>`;
             var opt = document.createElement("div");

@@ -46,8 +46,17 @@ exports.findUnAssignedQuestion = async function(username) {
             unassigned.push(questionList[i])
         }
     }
+    var tutList = await db.collection("tutorial").find({}).toArray()
+    var untut = []
+    for(var j=0, ll=tutList.length; j<ll; j++){
+        var assign = await db.collection("assignment").findOne({"questionid": tutList[j]._id, "username": username});
+        if(!assign) {
+            tutList[j].type = "tut";
+            untut.push(tutList[j])
+        }
+    }
     client.close();
-    return unassigned;
+    return unassigned.concat(untut);
 }
 
 exports.findQuestion = async function(username) {
@@ -64,8 +73,18 @@ exports.findQuestion = async function(username) {
             questionList[i].assigned = 0;
         }
     }
+    var tutList = await db.collection("tutorial").find({}).toArray()
+    for(var j=0, ll=tutList.length; j<ll; j++){
+        var assign = await db.collection("assignment").findOne({"questionid": tutList[j]._id, "username": username, "status": 0});
+        if(assign) {
+            tutList[j].assigned = 1;
+        } else {
+            tutList[j].assigned = 0;
+        }
+        tutList[j].type = "tut";
+    }
     client.close();
-    return questionList;
+    return questionList.concat(tutList);
 }
 
 exports.completeQuestion = function(questionid, username, wronganw, res) {
@@ -81,9 +100,18 @@ exports.getQuiz = function(questionid, res) {
     mgc.connect(url, function (err, client) {
         var db = client.db("quiz");
         db.collection("question").findOne({"_id": new ObjectID(questionid)}, function(err, question) {
-            res.json(question);
+            if (question) {
+                question.type="question"
+                client.close();
+                res.json(question);
+            } else {
+                db.collection("tutorial").findOne({"_id": new ObjectID(questionid)}, function(err, question) {
+                    question.type="tutorial"
+                    client.close();
+                    res.json(question);
+                })
+            }
         });
-        client.close();
     })
 }
 
@@ -97,6 +125,17 @@ exports.getAssignment = function(username, res) {
             })
             res.json({questionList: questionList});
         });
+        client.close();
+    })
+}
+
+exports.saveTut = function(title, tutorial) {
+    let tut = {}
+    tut.title = title
+    tut.vid = tutorial
+    mgc.connect(url, function (err, client) {
+        var db = client.db("quiz");
+        db.collection("tutorial").insertOne(tut);
         client.close();
     })
 }

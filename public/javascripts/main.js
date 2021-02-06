@@ -9,6 +9,10 @@
     var audioSuccess = document.querySelector(".success");
     var audioRetry = document.querySelector(".retry");
     var yeah = document.querySelector(".congrats");
+    var peerConnection = new RTCPeerConnection();
+    //var socket = io();
+    var teacherId;
+
    function eventhook() {
       let megaphoneBtn = document.querySelector(".control .megaphone");
       megaphoneBtn.addEventListener("click", function () {
@@ -55,6 +59,7 @@
             loadQuiz()
         }
    }
+   window.nextQ = nextQ
 
    async function completeQuestion(qid) {
        let url = "api/v1/question" +  getUsername() + "&questionid="+qid + "&wronganw=" + wronganswer;
@@ -82,37 +87,48 @@
        if (resp.ok) {
            let json = await resp.json();
            question = json;
-           render();
+           render(json.type);
            eventhook();
+           if(!isTeacher()) {
+               callTeacher()
+           }
            setTimeout(function () {
                narrate()
            },1000);
        }
    }
 
-   function render() {
-       var template = `<div class="question" id="${question._id}" data-solution="${question.solution}">
-          <img src="quiz/${question.question}">
-        </div>
-        <div class="desc">
-        </div>
-        <div class="choice">`;
-       var opts = ``;
-       if(question.answer_format == "image") {
-           question.answers.forEach(function (element, i) {
-               opts += `<div class="opt"><img src="quiz/${element}"><div>${alpha[i]}</div></div>`
-           })
-       } else {
-           question.answers.forEach(function (element, i) {
-               opts += `<div class="opt"><div>${element}</div><div>${alpha[i]}</div></div>`
-           })
+   function render(type) {
+       if(type=="question") {
+          var template = `<div class="question" id="${question._id}" data-solution="${question.solution}">
+             <img src="quiz/${question.question}">
+             </div>
+             <div class="desc">
+             </div>
+            <div class="choice">`;
+           var opts = ``;
+           if(question.answer_format == "image") {
+               question.answers.forEach(function (element, i) {
+                   opts += `<div class="opt"><img src="quiz/${element}"><div>${alpha[i]}</div></div>`
+               })
+           } else {
+               question.answers.forEach(function (element, i) {
+                   opts += `<div class="opt"><div>${element}</div><div>${alpha[i]}</div></div>`
+               })
+           }
+           var rest =
+               `</div>
+                <audio class="narrative">
+                 <source src="quiz/${question.narrative}" type="audio/x-m4a">
+                </audio>`;
+           document.querySelector(".board").innerHTML = template + opts + rest;
+       } else if(type=="tutorial") {
+          var template = `<div class="tutorial">
+                            <video id="tut-vid" src="quiz/${question.vid}" controls onended="nextQ()"></video>
+                           </div>
+                           `
+           document.querySelector(".board").innerHTML = template;
        }
-       var rest =
-        `</div>
-          <audio class="narrative">
-            <source src="quiz/${question.narrative}" type="audio/x-m4a">
-          </audio>`;
-       document.querySelector(".board").innerHTML = template + opts + rest;
    }
 
    function getUsername() {
@@ -142,5 +158,73 @@
        )
    }
 
+   function isTeacher() {
+       return location.search.indexOf("didxga")
+   }
+
+    async function callTeacher() {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(new RTCSessionDescription(offer));
+
+        socket.emit("call-teacher", {
+            offer,
+            to: teacherId
+        });
+    }
+
+   function recvSocket() {
+       socket.on("init", (args) => {
+           socket.emit("register", {socketid: socket.id, isTeacher: isTeacher()});
+       })
+       if(!isTeacher()) {
+           socket.on("teacher-online", (args) => {
+               teacherId = args.teacherId
+               callTeacher();
+           })
+           socket.on("answer-made", async data => {
+               await peerConnection.setRemoteDescription(
+                   new RTCSessionDescription(data.answer)
+               );
+           });
+       } else {
+           socket.on("call-made", async data => {
+               await peerConnection.setRemoteDescription(
+                   new RTCSessionDescription(data.offer)
+               );
+               const answer = await peerConnection.createAnswer();
+               await peerConnection.setLocalDescription(new RTCSessionDescription(answer));
+
+               socket.emit("make-answer", {
+                   answer
+               });
+           });
+       }
+   }
+
+   //recvSocket();
+
+   function initChat() {
+       peerConnection.ontrack = function({ streams: [stream] }) {
+           const remoteVideo = document.getElementById("local-video");
+           if (remoteVideo) {
+               remoteVideo.srcObject = stream;
+           }
+       };
+   }
+
+   function localMedia() {
+       navigator.mediaDevices.getUserMedia({audio: true}).then(
+           stream => {
+               const  localVideo = document.getElementById("local-video")
+               if(localVideo) {
+                   localVideo.srcObject = stream;
+               }
+           }
+       ).catch(error => {
+           alert(error.message)
+       })
+   }
+
+  // initChat();
    preload();
 })(window)
