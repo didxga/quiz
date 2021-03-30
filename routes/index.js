@@ -62,7 +62,7 @@ router.get('/assignment', async function (req, res, next) {
 router.post('/assignto', function (req, res, next) {
     var username = req.body.username;
     var questionList = mongo.findQuestion(username);
-    res.redirect('question?u=' + username);
+    res.redirect('question?u=' + username + '&filter=unassigned');
 })
 
 router.post('/assign-question', function(req, res, next) {
