@@ -101,7 +101,9 @@
    function render(type) {
        if(type=="question") {
           var template = `<div class="question" id="${question._id}" data-solution="${question.solution}">
+             <div class="img-container">
              <img src="quiz/${question.question}">
+             </div>
              </div>
              <div class="desc">
              </div>

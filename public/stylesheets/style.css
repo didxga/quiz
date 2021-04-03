@@ -60,9 +60,11 @@ a {
 .board .choice .opt img {
   width: 100px;
 }
-
-.board .question img {
+.board .question .img-container {
   height: 310px;
+}
+.board .question img {
+  height: 210px;
 }
 
 .control {
