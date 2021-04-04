@@ -62,9 +62,9 @@ a {
 }
 .board .question .img-container {
   height: 310px;
-}
-.board .question img {
-  height: 210px;
+  width: 1200px;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .control {
