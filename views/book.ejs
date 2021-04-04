@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>CMS</title>
+    <link rel='stylesheet' href='stylesheets/reader.css' />
+</head>
+<body>
+<%if(!book) {%>
+<script type="text/javascript">alert("没有可看的书")</script>
+<%}else {%>
+<div class="start"></div>
+<section class="book" style="background-image: url('quiz/<%=book.page%>/cover.png')">
+</section>
+<div class="nav">
+    <div class="pre"></div>
+    <div class="next"></div>
+</div>
+<div class="audio-container" style="display: block">
+    <audio class="audio">
+        <source id="audio-source" src="quiz/<%=book.audio%>/1.m4a" type="audio/x-m4a">
+    </audio>
+</div>
+<script type="text/javascript">
+    var book = document.querySelector(".book");
+    var audio_source = document.querySelector("#audio-source");
+    var current = 0;
+    document.querySelector(".start").addEventListener("click", function(e) {
+        document.querySelector(".start").style.display = "none";
+        current++;
+        book.style.backgroundImage = "url('quiz/<%=book.page%>/" + current + ".png')"
+        document.querySelector(".audio").play();
+        document.querySelector(".nav .pre").addEventListener("click", function (e) {
+            current--;
+            if(current<1) {
+                current=1;
+            }
+            book.style.backgroundImage = "url('quiz/<%=book.page%>/" + current + ".png')"
+            var audioEle = `<audio class="audio">
+                        <source id="audio-source" src="quiz/<%=book.audio%>/${current}.m4a" type="audio/x-m4a">
+                        </audio>`
+            document.querySelector(".audio-container").innerHTML = audioEle;
+            document.querySelector(".audio").play();
+        })
+        document.querySelector(".nav .next").addEventListener("click", function (e) {
+            current++;
+            book.style.backgroundImage = "url('quiz/<%=book.page%>/" + current + ".png')"
+            var audioEle = `<audio class="audio">
+                        <source id="audio-source" src="quiz/<%=book.audio%>/${current}.m4a" type="audio/x-m4a">
+                        </audio>`
+            document.querySelector(".audio-container").innerHTML = audioEle;
+            document.querySelector(".audio").play();
+        })
+    });
+
+</script>
+<%}%>
+</body>
+</html>

@@ -55,8 +55,17 @@ exports.findUnAssignedQuestion = async function(username) {
             untut.push(tutList[j])
         }
     }
+    var bookList = await db.collection("book").find({}).toArray();
+    var unbook = [];
+    for(var k=0, kl=bookList.length; k<kl; k++) {
+        var assign = await db.collection("assignment").findOne({"questionid": bookList[k]._id, "username": username });
+        if(!assign) {
+            bookList[k].type = "book";
+            unbook.push(bookList[k])
+        }
+    }
     client.close();
-    return unassigned.concat(untut);
+    return unassigned.concat(untut).concat(unbook);
 }
 
 exports.findQuestion = async function(username) {
@@ -83,8 +92,18 @@ exports.findQuestion = async function(username) {
         }
         tutList[j].type = "tut";
     }
+    var bookList = await db.collection("book").find({}).toArray()
+    for(var k=0, kl=bookList.length; k<kl; k++) {
+        var assign = await db.collection("assignment").findOne({"questionid": bookList[k]._id, "username": username, "status": 0});
+        if(assign) {
+            bookList[k].assigned = 1;
+        } else {
+            bookList[k].assigned = 0;
+        }
+        bookList[k].type = "book";
+    }
     client.close();
-    return questionList.concat(tutList);
+    return questionList.concat(tutList).concat(bookList);
 }
 
 exports.completeQuestion = function(questionid, username, wronganw, res) {
@@ -115,6 +134,21 @@ exports.getQuiz = function(questionid, res) {
     })
 }
 
+exports.getBook = async function(username, res) {
+    var client = await mgc.connect(url)
+    var db =  client.db("quiz");
+
+    var docs = await db.collection("assignment").find({"username": username, "status": 0}).toArray();
+    for(var i=0; i<docs.length; i++) {
+        var book = await db.collection("book").findOne({"_id": new ObjectID(docs[i].questionid)})
+        if(book) {
+            client.close();
+            return book;
+        }
+    }
+    client.close();
+}
+
 exports.getAssignment = function(username, res) {
     questionList = [];
     mgc.connect(url, function (err, client) {
@@ -125,6 +159,18 @@ exports.getAssignment = function(username, res) {
             })
             res.json({questionList: questionList});
         });
+        client.close();
+    })
+}
+
+exports.saveBook = function(title, page, audio) {
+    let book = {}
+    book.title = title
+    book.page = page
+    book.audio = audio
+    mgc.connect(url, function (err, client) {
+        var db = client.db("quiz");
+        db.collection("book").insertOne(book);
         client.close();
     })
 }

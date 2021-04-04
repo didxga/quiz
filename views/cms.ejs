@@ -7,10 +7,21 @@
     <select id="upload-type">
         <option value="qu">上传问题</option>
         <option value="tut">上传教程</option>
+        <option value="book">上传读物</option>
     </select>
     <hr>
+    <section id="book" style="display: none">
+        <form enctype="multipart/form-data" method="post" action="/upload-book">
+            <div>
+                <div><label>书名<input name="title" type="text"></label></div>
+                <div><label>书本<input name="page" type="file"></label></div>
+                <div><label>音频<input name="audio" type="file"></label></div>
+            </div>
+            <input type="submit" value="提交">
+        </form>
+    </section>
     <section id="tut" style="display: none">
-        <form enctype="multipart/form-data" method="post" action="upload-tutorial">
+        <form enctype="multipart/form-data" method="post" action="/upload-tutorial">
             <div>
                 <div><label>标题<input name="title" type="text"></label></div>
                 <div><label>音频<input name="tutorial" type="file"></label></div>
@@ -19,7 +30,7 @@
         </form>
     </section>
     <section id="qu">
-        <form enctype="multipart/form-data" method="post" action="upload-question">
+        <form enctype="multipart/form-data" method="post" action="/upload-question">
             <div>
                 <div><label>问题<input name="question" type="file"></label></div>
                 <div><label>音频<input name="narrative" type="file"></label></div>
@@ -62,9 +73,15 @@
            if(v == "tut") {
               document.getElementById("tut").style.display = "block";
               document.getElementById("qu").style.display = "none";
+              document.getElementById("book").style.display = "none";
+           } else if(v == "book") {
+               document.getElementById("tut").style.display = "none";
+               document.getElementById("qu").style.display = "none";
+               document.getElementById("book").style.display = "block";
            } else {
                document.getElementById("tut").style.display = "none";
                document.getElementById("qu").style.display = "block";
+               document.getElementById("book").style.display = "none";
            }
         })
         function addopt() {

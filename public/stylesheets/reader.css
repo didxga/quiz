@@ -1,0 +1,39 @@
+.book {
+    width:100vw;
+    height: 100vw;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.nav {
+    top:0;
+    left: 0;
+    position: absolute;
+    width: 100vw;
+    height: 100vw;
+    display: flex;
+}
+
+.nav .pre {
+    width: 50%;
+
+}
+
+.nav .next {
+    width: 50%;
+
+}
+
+.start {
+    z-index: 999999;
+    background-image: url("../images/start.png");
+    width: 400px;
+    height: 400px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}

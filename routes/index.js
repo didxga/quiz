@@ -3,6 +3,9 @@ var router = express.Router();
 var mongo = require('../mongo')
 var multer = require('multer');
 var uuid = require('uuid');
+var fs = require("fs");
+var unzip = require("node-unzip-2")
+
 var storage = multer.diskStorage(
     {
       destination: root + "/public/quiz",
@@ -24,6 +27,11 @@ var upload = multer({storage: storage})
 router.get('/q', function(req, res, next) {
     res.render("index");
 });
+
+router.get('/b', async function (req, res, next) {
+    var book = await mongo.getBook(req.query.username, res)
+    res.render('book', {"book":book});
+})
 
 router.get("/api/v1/assignment", function (req, res, next) {
     mongo.getAssignment(req.query.username, res)
@@ -76,6 +84,29 @@ router.post('/assign-question', function(req, res, next) {
    mongo.unassign(n.split(","), username)
  }
  res.redirect("question?u=" + username);
+})
+
+router.post('/upload-book', upload.any(), function (req, res, next) {
+    let files = req.files;
+    let page, audio;
+    let title = req.body.title;
+    if(files) {
+        files.forEach(function (file) {
+            if (file.fieldname == "page") {
+                page = file.filename;
+            } else if (file.fieldname == "audio") {
+                audio = file.filename;
+            }
+        })
+    }
+    let extract = unzip.Extract({ path: 'public/quiz/' + page.substring(0, page.length-4) });
+    extract.on('close',function(){
+        fs.createReadStream("public/quiz/" + audio).pipe(unzip.Extract({ path: 'public/quiz/' + audio.substring(0, page.length-4) }))
+    });
+    fs.createReadStream("public/quiz/" + page).pipe(extract);
+
+   mongo.saveBook(title, page.substring(0, page.length-4), audio.substring(0, audio.length-4));
+   res.render("add_success");
 })
 
 router.post('/upload-tutorial', upload.any(), function (req, res, next) {
