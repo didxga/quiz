@@ -76,8 +76,9 @@ router.post('/assignto', function (req, res, next) {
 router.post('/assign-question', function(req, res, next) {
  var a = req.body.assignmentlist;
  var username = req.body.username;
+ var typelist = req.body.typelist
  if(a) {
-   mongo.assign(a.split(","), username)
+   mongo.assign(a.split(","), typelist.split(","), username)
  }
  var n = req.body.unassignmentlist;
  if(n) {

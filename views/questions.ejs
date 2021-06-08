@@ -11,12 +11,13 @@
 <section>
     <table style="border-collapse:collapse; border:1px solid greenyellow;">
         <thead>
-            <td>ID</td><td>分配问题给<%=username%></td>
+            <td>ID</td><td>类型</td><td>分配问题给<%=username%></td>
         </thead>
         <tbody>
         <% for(var i=0; i < questionList.length; i++) { %>
             <tr>
                     <td style="border:1px solid greenyellow;"><%= questionList[i]._id %></td>
+                    <td style="border:1px solid greenyellow;"><%= questionList[i].type %></td>
                 <% if(questionList[i].type=="tut") {%>
                     <td style="border:1px solid greenyellow;"><video style="width:400px" src="quiz/<%= questionList[i].vid %>" controls></video></td>
                 <% } else if (questionList[i].type=="book") {%>
@@ -37,6 +38,7 @@
     </table>
     <form method="post" action="assign-question">
         <input type="hidden" name="username" value="<%=username%>">
+        <input type="hidden" name="typelist" value="">
         <input type="hidden" name="assignmentlist">
         <input type="hidden" name="unassignmentlist">
         <input type="submit" value="提交">
@@ -45,15 +47,20 @@
 <script type="text/javascript">
     let inputassign = document.querySelector("input[name=assignmentlist]")
     let inputunassign = document.querySelector("input[name=unassignmentlist]")
+    let inputtypelist = document.querySelector("input[name=typelist]") 
     document.querySelectorAll(".assign").forEach(function (element) {
         element.addEventListener("click", function () {
            let assignments = inputassign.value;
+           let typelist = inputtypelist.value;
            if (assignments) {
                assignments += "," + element.parentElement.parentElement.firstElementChild.innerText;
+               typelist += "," + element.parentElement.parentElement.firstElementChild.nextElementSibling.innerText;
            } else {
                assignments = element.parentElement.parentElement.firstElementChild.innerText;
+               typelist += element.parentElement.parentElement.firstElementChild.nextElementSibling.innerText;
            }
            inputassign.value = assignments;
+           inputtypelist.value = typelist;
             element.remove();
         });
     })

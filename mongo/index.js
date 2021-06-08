@@ -14,12 +14,12 @@ exports.getUsers = async function() {
     return users;
 }
 
-exports.assign = async function(questions, username) {
+exports.assign = async function(questions, type, username) {
     var client = await mgc.connect(url)
     var db = client.db("quiz");
     for(var i=0; i<questions.length; i++) {
         qid = questions[i]
-        let a = {questionid: new ObjectID(qid), username: username, status: 0, addedAt: new Date()};
+        let a = {questionid: new ObjectID(qid), username: username, status: 0, type: type[i], addedAt: new Date()};
         await db.collection("assignment").insertOne(a);
     }
 }
@@ -43,6 +43,7 @@ exports.findUnAssignedQuestion = async function(username) {
     for(var i=0, l=questionList.length; i<l; i++) {
         var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id, "username": username });
         if(!assignment) {
+            questionList[i].type = "question"
             unassigned.push(questionList[i])
         }
     }
@@ -81,6 +82,7 @@ exports.findQuestion = async function(username) {
         } else {
             questionList[i].assigned = 0;
         }
+        questionList[i].type = "question";
     }
     var tutList = await db.collection("tutorial").find({}).toArray()
     for(var j=0, ll=tutList.length; j<ll; j++){
@@ -138,7 +140,7 @@ exports.getBook = async function(username, res) {
     var client = await mgc.connect(url)
     var db =  client.db("quiz");
 
-    var docs = await db.collection("assignment").find({"username": username, "status": 0}).toArray();
+    var docs = await db.collection("assignment").find({"username": username, "status": 0, "type": "book"}).toArray();
     for(var i=0; i<docs.length; i++) {
         var book = await db.collection("book").findOne({"_id": new ObjectID(docs[i].questionid)})
         if(book) {
@@ -153,7 +155,7 @@ exports.getAssignment = function(username, res) {
     questionList = [];
     mgc.connect(url, function (err, client) {
         var db = client.db("quiz");
-        db.collection("assignment").find({"username": username, "status": 0}).toArray(function (err, docs) {
+        db.collection("assignment").find({"username": username, "status": 0, $or: [{"type": "tut"}, {"type": "question"}]}).toArray(function (err, docs) {
             docs.forEach(function (assignment) {
                 questionList.push(assignment.questionid);
             })
