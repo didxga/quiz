@@ -74,7 +74,7 @@ exports.findQuestion = async function(username) {
     var client = await mgc.connect(url)
 
     var db = client.db("quiz");
-    questionList = await db.collection("question").find({}).toArray()
+    questionList = await db.collection("question").find({}).sort({ $natural: -1 }).toArray()
     for(var i=0, l=questionList.length; i<l; i++) {
         var assignment = await db.collection("assignment").findOne({"questionid": questionList[i]._id, "username": username, "status": 0});
         if(assignment) {
