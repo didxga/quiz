@@ -54,10 +54,14 @@ router.get('/cms', function (req, res, next) {
 router.get('/question', async function (req, res, next) {
     var username = req.query.u;
     var filter = req.query.filter;
+    var limit = req.query.limit;
     if(filter && filter == "unassigned") {
         var questionList = await mongo.findUnAssignedQuestion(username);
     } else {
         var questionList = await mongo.findQuestion(username);
+        if(!limit) {
+          questionList = questionList.slice(0, 10);
+        }
     }
     res.render('questions', {questionList: questionList, username: username});
 })
